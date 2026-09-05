@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="以 INF 2.34 規則書為來源、重新整理與改寫的非官方唯讀怪物圖鑑。"
+    />
+    <meta name="color-scheme" content="dark" />
+    <title>INF 怪物圖鑑</title>
+    <link rel="stylesheet" href="./assets/app.css" />
+    <script src="./assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#catalog">跳至怪物圖鑑</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div>
+          <p class="eyebrow">INF 2.34 · 公開唯讀版</p>
+          <h1>怪物圖鑑</h1>
+          <p class="intro">
+            依規則書重新整理的怪物資料卡。這是玩家製作的改寫版、非官方鏡像，並非規則書官方網站。
+          </p>
+        </div>
+        <a
+          class="source-link"
+          href="https://inf-boop.github.io/INF/2.34/2.34.html"
+          target="_blank"
+          rel="noreferrer"
+        >
+          查看規則書來源
+        </a>
+      </div>
+    </header>
+
+    <main id="catalog" class="catalog-shell">
+      <section class="toolbar" aria-label="圖鑑篩選">
+        <label class="field field--search">
+          <span>搜尋名稱或卡片內容</span>
+          <input id="search" type="search" placeholder="輸入關鍵字" autocomplete="off" />
+        </label>
+
+        <label class="field field--tier">
+          <span>怪物等級</span>
+          <select id="tier-filter">
+            <option value="all">全部</option>
+            <option value="無">無</option>
+            <option value="D">D</option>
+            <option value="C">C</option>
+            <option value="B">B</option>
+            <option value="A">A</option>
+          </select>
+        </label>
+
+        <button id="expand-all" class="compact-button" type="button">全部展開</button>
+        <button id="collapse-all" class="compact-button" type="button">全部收合</button>
+      </section>
+
+      <p id="catalog-status" class="catalog-status" role="status" aria-live="polite">
+        正在載入圖鑑…
+      </p>
+      <div id="category-list" class="category-list" aria-label="怪物分類"></div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        資料來源：
+        <a href="https://inf-boop.github.io/INF/2.34/2.34.html" target="_blank" rel="noreferrer">
+          INF 2.34 規則書
+        </a>
+        。本站僅提供重新編寫的摘要與遊戲資料整理；若有差異，以原規則書為準。
+      </p>
+    </footer>
+
+    <noscript>
+      <p class="noscript">此唯讀圖鑑需要 JavaScript 才能載入分類與怪物卡片。</p>
+    </noscript>
+  </body>
+</html>
