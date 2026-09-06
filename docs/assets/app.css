@@ -263,7 +263,7 @@ h1 {
 
 .monster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
 }
 
@@ -274,24 +274,55 @@ h1 {
   background: var(--surface-raised);
 }
 
+.monster-summary {
+  display: flex;
+  align-items: center;
+  min-height: 3.75rem;
+  padding-right: 0.9rem;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.monster-summary::-webkit-details-marker {
+  display: none;
+}
+
+.monster-summary::after {
+  flex: none;
+  margin-left: auto;
+  color: var(--accent);
+  content: "▸";
+  transition: transform 140ms ease;
+}
+
+.monster-card[open] > .monster-summary::after {
+  transform: rotate(90deg);
+}
+
+.monster-summary:hover {
+  background: var(--surface-hover);
+}
+
 .monster-image,
 .monster-image--placeholder {
   display: block;
-  width: 100%;
+  flex: none;
+  width: min(18.75rem, 42%);
   height: 3.75rem;
 }
 
 .monster-image {
   object-fit: cover;
   object-position: center;
-  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
   background: #080b0f;
 }
 
 .monster-image--placeholder {
   display: grid;
   place-items: center;
-  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
   color: #82909c;
   background:
     linear-gradient(110deg, transparent, rgb(216 166 61 / 0.08), transparent),
@@ -300,14 +331,15 @@ h1 {
 }
 
 .monster-card__body {
-  padding: 0.75rem;
+  padding: 0.8rem;
+  border-top: 1px solid var(--line);
 }
 
 .monster-heading {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.65rem;
 }
 
 .tier-badge {
@@ -332,16 +364,18 @@ h1 {
 }
 
 .monster-name {
-  margin: 0;
+  min-width: 0;
+  margin: 0 0.75rem;
   font-family: Georgia, "Noto Serif TC", serif;
   font-size: 1.1rem;
   line-height: 1.25;
 }
 
 .monster-card__category {
-  margin: 0.1rem 0 0;
+  margin: 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .monster-card__text {
@@ -424,6 +458,20 @@ h1 {
 
   .field--search {
     grid-column: auto;
+  }
+
+  .monster-summary {
+    padding-right: 0.7rem;
+  }
+
+  .monster-image,
+  .monster-image--placeholder {
+    width: 44%;
+  }
+
+  .monster-name {
+    margin-inline: 0.65rem;
+    font-size: 1rem;
   }
 }
 

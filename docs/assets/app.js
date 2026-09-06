@@ -80,8 +80,9 @@ function createElement(tag, className, text) {
 }
 
 function createMonsterCard(monster) {
-  const article = createElement("article", "monster-card");
-  article.dataset.slug = monster.slug;
+  const details = createElement("details", "monster-card");
+  details.dataset.slug = monster.slug;
+  const summary = createElement("summary", "monster-summary");
 
   if (monster.image) {
     const image = createElement("img", "monster-image");
@@ -94,21 +95,20 @@ function createMonsterCard(monster) {
     image.addEventListener("error", () => {
       image.replaceWith(createElement("div", "monster-image--placeholder", "圖像尚未提供"));
     });
-    article.append(image);
+    summary.append(image);
   } else {
-    article.append(createElement("div", "monster-image--placeholder", "圖像尚未提供"));
+    summary.append(createElement("div", "monster-image--placeholder", "圖像尚未提供"));
   }
+
+  summary.append(createElement("h2", "monster-name", monster.name));
+  details.append(summary);
 
   const body = createElement("div", "monster-card__body");
   const heading = createElement("div", "monster-heading");
   const tierBadge = createElement("span", "tier-badge", monster.tier);
   tierBadge.dataset.tier = monster.tier;
   heading.append(tierBadge);
-
-  const titleWrap = document.createElement("div");
-  titleWrap.append(createElement("h2", "monster-name", monster.name));
-  titleWrap.append(createElement("p", "monster-card__category", monster.category));
-  heading.append(titleWrap);
+  heading.append(createElement("p", "monster-card__category", monster.category));
 
   body.append(heading);
   body.append(createElement("pre", "monster-card__text", monster.card));
@@ -121,8 +121,8 @@ function createMonsterCard(monster) {
     body.append(source);
   }
 
-  article.append(body);
-  return article;
+  details.append(body);
+  return details;
 }
 
 function getFilteredMonsters() {
@@ -177,9 +177,12 @@ function render() {
       : `顯示 ${filtered.length}／${monsters.length} 個怪物。`;
 }
 
-function setAllCategories(open) {
+function setAllDetails(open) {
   document.querySelectorAll(".category-group").forEach((group) => {
     group.open = open;
+  });
+  document.querySelectorAll(".monster-card").forEach((card) => {
+    card.open = open;
   });
 }
 
@@ -206,7 +209,7 @@ async function loadCatalog() {
 
 elements.search.addEventListener("input", render);
 elements.tier.addEventListener("change", render);
-elements.expandAll.addEventListener("click", () => setAllCategories(true));
-elements.collapseAll.addEventListener("click", () => setAllCategories(false));
+elements.expandAll.addEventListener("click", () => setAllDetails(true));
+elements.collapseAll.addEventListener("click", () => setAllDetails(false));
 
 loadCatalog();
