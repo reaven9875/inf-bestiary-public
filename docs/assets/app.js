@@ -1,6 +1,8 @@
 "use strict";
 
 const CATEGORIES = Object.freeze([
+  "一般生物",
+  "人類",
   "黑暗生物",
   "光明生物",
   "不死生物",
@@ -12,8 +14,6 @@ const CATEGORIES = Object.freeze([
   "泥型生物",
   "植物生物",
   "集群生物",
-  "人類",
-  "一般生物",
 ]);
 
 const TIERS = new Set(["無", "D", "C", "B", "A", "S", "SS", "SSS", "待確認"]);
