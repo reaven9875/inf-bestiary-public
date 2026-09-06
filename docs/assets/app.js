@@ -16,7 +16,7 @@ const CATEGORIES = Object.freeze([
   "一般生物",
 ]);
 
-const TIERS = new Set(["無", "D", "C", "B", "A"]);
+const TIERS = new Set(["無", "D", "C", "B", "A", "S", "SS", "SSS", "待確認"]);
 const FALLBACK_SOURCE = "https://inf-boop.github.io/INF/2.34/2.34.html";
 
 const elements = {
@@ -50,7 +50,7 @@ function normalizeMonster(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
 
   const category = CATEGORIES.includes(value.category) ? value.category : "一般生物";
-  const tier = TIERS.has(value.tier) ? value.tier : "無";
+  const tier = TIERS.has(value.tier) ? value.tier : "待確認";
   const name = cleanText(value.name);
   const card = cleanText(value.card);
   const slug = cleanText(value.slug)
@@ -101,7 +101,9 @@ function createMonsterCard(monster) {
 
   const body = createElement("div", "monster-card__body");
   const heading = createElement("div", "monster-heading");
-  heading.append(createElement("span", "tier-badge", monster.tier));
+  const tierBadge = createElement("span", "tier-badge", monster.tier);
+  tierBadge.dataset.tier = monster.tier;
+  heading.append(tierBadge);
 
   const titleWrap = document.createElement("div");
   titleWrap.append(createElement("h2", "monster-name", monster.name));
