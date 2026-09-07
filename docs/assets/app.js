@@ -100,14 +100,16 @@ function createMonsterCard(monster) {
     summary.append(createElement("div", "monster-image--placeholder", "圖像尚未提供"));
   }
 
-  summary.append(createElement("h2", "monster-name", monster.name));
+  const identity = createElement("div", "monster-summary__identity");
+  const tierBadge = createElement("span", "tier-badge", monster.tier);
+  tierBadge.dataset.tier = monster.tier;
+  tierBadge.setAttribute("aria-label", `等級：${monster.tier}`);
+  identity.append(tierBadge, createElement("h2", "monster-name", monster.name));
+  summary.append(identity);
   details.append(summary);
 
   const body = createElement("div", "monster-card__body");
   const heading = createElement("div", "monster-heading");
-  const tierBadge = createElement("span", "tier-badge", monster.tier);
-  tierBadge.dataset.tier = monster.tier;
-  heading.append(tierBadge);
   heading.append(createElement("p", "monster-card__category", monster.category));
 
   body.append(heading);
