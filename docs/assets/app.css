@@ -402,7 +402,12 @@ h1 {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 1rem;
+}
+
+.hp-adjusted {
+  color: #7ee2a8;
+  font-weight: 700;
 }
 
 .monster-card__source {

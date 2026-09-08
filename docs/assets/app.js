@@ -113,7 +113,18 @@ function createMonsterCard(monster) {
   heading.append(createElement("p", "monster-card__category", monster.category));
 
   body.append(heading);
-  body.append(createElement("pre", "monster-card__text", monster.card));
+  const cardText = createElement("pre", "monster-card__text");
+  const hpMatch = /(^血量[^\S\n]+\d+[／/]\d+(?:[^\S\n]*HP)?[^\S\n]*)(（\d+[／/]\d+）)/mu.exec(monster.card);
+  if (hpMatch) {
+    const start = hpMatch.index + hpMatch[1].length;
+    const annotation = createElement("span", "hp-adjusted", hpMatch[2]);
+    annotation.title = "四人基準調整血量；前方為原始血量";
+    annotation.setAttribute("aria-label", `四人基準調整血量 ${hpMatch[2]}`);
+    cardText.append(monster.card.slice(0, start), annotation, monster.card.slice(start + hpMatch[2].length));
+  } else {
+    cardText.textContent = monster.card;
+  }
+  body.append(cardText);
 
   if (monster.sourceUrl) {
     const source = createElement("a", "monster-card__source", "資料來源");
