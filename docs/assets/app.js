@@ -114,16 +114,18 @@ function createMonsterCard(monster) {
 
   body.append(heading);
   const cardText = createElement("pre", "monster-card__text");
-  const hpMatch = /(^血量[^\S\n]+\d+[／/]\d+(?:[^\S\n]*HP)?[^\S\n]*)(（\d+[／/]\d+）)/mu.exec(monster.card);
-  if (hpMatch) {
-    const start = hpMatch.index + hpMatch[1].length;
-    const annotation = createElement("span", "hp-adjusted", hpMatch[2]);
-    annotation.title = "四人基準調整血量；前方為原始血量";
-    annotation.setAttribute("aria-label", `四人基準調整血量 ${hpMatch[2]}`);
-    cardText.append(monster.card.slice(0, start), annotation, monster.card.slice(start + hpMatch[2].length));
-  } else {
-    cardText.textContent = monster.card;
+  const hpPattern = /((?:^血量[^\S\n]+|^【[^】\n]+】[^\S\n]*)\d+[／/]\d+(?:[^\S\n]*HP)?[^\S\n]*)(（\d+[／/]\d+）)|(\d+)(（\d+）)(?=[^\S\n]*(?:HP\b|血量))/gimu;
+  let hpCursor = 0;
+  for (const match of monster.card.matchAll(hpPattern)) {
+    const value = match[2] ?? match[4];
+    const start = match.index + (match[1] ?? match[3]).length;
+    const annotation = createElement("span", "hp-adjusted", value);
+    annotation.title = "四人基準調整血量；前方為原始值";
+    annotation.setAttribute("aria-label", `四人基準調整血量 ${value}`);
+    cardText.append(monster.card.slice(hpCursor, start), annotation);
+    hpCursor = start + value.length;
   }
+  cardText.append(monster.card.slice(hpCursor));
   body.append(cardText);
 
   if (monster.sourceUrl) {
