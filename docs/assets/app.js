@@ -170,8 +170,8 @@ function render() {
     collectionSummary.append(createElement('span', 'category-count', String(collectionMonsters.length)));
     collectionDetails.append(collectionSummary);
     const categories = createElement('div', 'collection-content');
-  for (const category of CATEGORIES) {
-    const categoryMonsters = collectionMonsters.filter((monster) => monster.category === category);
+  for (const category of (collection.subcategories || CATEGORIES)) {
+    const categoryMonsters = collectionMonsters.filter((monster) => (monster.subcategory || monster.category) === category);
     const details = createElement("details", "category-group");
     details.open = filtered.length > 0 && categoryMonsters.length > 0;
 
@@ -246,6 +246,32 @@ async function loadCatalog() {
 
     monsters = payload.map(normalizeMonster).filter(Boolean);
     render();
+    // Custom data fails independently: never hide the 99 rulebook cards.
+    try {
+      const response = await fetch('./data/custom-catalog.json', {cache:'no-cache'});
+      if (!response.ok) throw new Error('Custom catalog unavailable');
+      const custom = await response.json();
+      if (custom.version !== 1 || !Array.isArray(custom.collections) || !Array.isArray(custom.enemies)) throw new Error('Invalid custom catalog');
+      const customGroups = [], customMonsters = [], customIds = new Set();
+      for (const g of custom.collections) {
+        if (!/^custom-[0-9a-f-]{36}$/.test(g.id) || customIds.has(g.id) || typeof g.name !== 'string' || !g.name.trim() || g.name === '規則書圖鑑' || !Array.isArray(g.subcategories) || g.subcategories.some(s=>typeof s !== 'string' || !s.trim())) throw new Error('Invalid custom collection');
+        customIds.add(g.id);
+        customGroups.push({id:g.id,name:g.name,subcategories:g.subcategories,monsterSlugs:[]});
+      }
+      for (const e of custom.enemies) {
+        const g=customGroups.find(g=>g.id===e.collectionId);
+        if (!g || !g.subcategories.includes(e.subcategory) || !/^custom-[0-9a-f-]{36}$/.test(e.id) || customIds.has(e.id) || typeof e.card !== 'string' || typeof e.name !== 'string') throw new Error('Invalid custom enemy');
+        customIds.add(e.id);
+        const monster=normalizeMonster({...e,slug:e.id,sourceUrl:'https://github.com/reaven9875/inf-bestiary-public/blob/main/docs/data/custom-catalog.json'});
+        if(!monster) throw new Error('Invalid custom enemy');
+        customMonsters.push({...monster,subcategory:e.subcategory,card:e.card.replace(/^```(?:text)?\s*\n/u,'').replace(/\n```\s*$/u,''),image:typeof e.image==='string'&&/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/.test(e.image)?e.image:''});
+        g.monsterSlugs.push(e.id);
+      }
+      collections.push(...customGroups);monsters.push(...customMonsters);render();
+    } catch {
+      elements.status.dataset.error='true';
+      elements.status.textContent+=' 自訂存檔暫時無法讀取，請重新整理；規則書圖鑑仍可使用。';
+    }
   } catch (error) {
     console.error("無法載入怪物圖鑑", error);
     elements.status.dataset.error = "true";
