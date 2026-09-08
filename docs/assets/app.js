@@ -114,14 +114,14 @@ function createMonsterCard(monster) {
 
   body.append(heading);
   const cardText = createElement("pre", "monster-card__text");
-  const hpPattern = /((?:^血量[^\S\n]+|^【[^】\n]+】[^\S\n]*)\d+[／/]\d+(?:[^\S\n]*HP)?[^\S\n]*)(（\d+[／/]\d+）)|(\d+)(（\d+）)(?=[^\S\n]*(?:HP\b|點生命|血量))|((?:HP\+?|不超過\s*|等於|已計入|=)\d+)(（\d+）)/gimu;
+  const hpPattern = /(?<=\d)（[−+\d][\d＋+／/−.\-]*）/gu;
   let hpCursor = 0;
   for (const match of monster.card.matchAll(hpPattern)) {
-    const value = match[2] ?? match[4] ?? match[6];
-    const start = match.index + (match[1] ?? match[3] ?? match[5]).length;
+    const value = match[0];
+    const start = match.index;
     const annotation = createElement("span", "hp-adjusted", value);
-    annotation.title = "四人基準調整血量；前方為原始值";
-    annotation.setAttribute("aria-label", `四人基準調整血量 ${value}`);
+    annotation.title = "四人基準採用值，非額外加值；前方為原始值";
+    annotation.setAttribute("aria-label", `四人基準調整數值 ${value}`);
     cardText.append(monster.card.slice(hpCursor, start), annotation);
     hpCursor = start + value.length;
   }
