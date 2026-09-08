@@ -91,6 +91,27 @@ select {
   margin-inline: auto;
 }
 
+.collection-group {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.collection-summary {
+  min-height: 3rem;
+  background: var(--surface-raised);
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.collection-content {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.5rem;
+}
+
 .site-header__inner {
   display: flex;
   align-items: end;

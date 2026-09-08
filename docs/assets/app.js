@@ -29,6 +29,7 @@ const elements = {
 };
 
 let monsters = [];
+let collections = [];
 
 function cleanText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -155,8 +156,22 @@ function render() {
   const filtered = getFilteredMonsters();
   const fragment = document.createDocumentFragment();
 
+  const assignedSlugs = new Set(collections.flatMap((collection) => collection.monsterSlugs));
+  const groups = [...collections];
+  const unfiled = monsters.filter((monster) => !assignedSlugs.has(monster.slug));
+  if (unfiled.length) groups.push({ id: 'unfiled', name: '未分類存檔', monsterSlugs: unfiled.map((monster) => monster.slug) });
+  for (const collection of groups) {
+    const slugs = new Set(collection.monsterSlugs);
+    const collectionMonsters = filtered.filter((monster) => slugs.has(monster.slug));
+    const collectionDetails = createElement('details', 'collection-group');
+    collectionDetails.open = collectionMonsters.length > 0;
+    const collectionSummary = createElement('summary', 'category-summary collection-summary');
+    collectionSummary.append(createElement('span', 'category-name', collection.name));
+    collectionSummary.append(createElement('span', 'category-count', String(collectionMonsters.length)));
+    collectionDetails.append(collectionSummary);
+    const categories = createElement('div', 'collection-content');
   for (const category of CATEGORIES) {
-    const categoryMonsters = filtered.filter((monster) => monster.category === category);
+    const categoryMonsters = collectionMonsters.filter((monster) => monster.category === category);
     const details = createElement("details", "category-group");
     details.open = filtered.length > 0 && categoryMonsters.length > 0;
 
@@ -181,7 +196,10 @@ function render() {
     }
 
     details.append(content);
-    fragment.append(details);
+    categories.append(details);
+  }
+    collectionDetails.append(categories);
+    fragment.append(collectionDetails);
   }
 
   elements.categoryList.replaceChildren(fragment);
@@ -193,7 +211,7 @@ function render() {
 }
 
 function setAllDetails(open) {
-  document.querySelectorAll(".category-group").forEach((group) => {
+  document.querySelectorAll(".collection-group, .category-group").forEach((group) => {
     group.open = open;
   });
   document.querySelectorAll(".monster-card").forEach((card) => {
@@ -208,6 +226,23 @@ async function loadCatalog() {
 
     const payload = await response.json();
     if (!Array.isArray(payload)) throw new TypeError("monsters.json 必須是陣列");
+
+    const collectionResponse = await fetch('./data/collections.json', { cache: 'no-cache' });
+    if (!collectionResponse.ok) throw new Error(`分類 HTTP ${collectionResponse.status}`);
+    const collectionData = await collectionResponse.json();
+    const ids = new Set();
+    const assigned = new Set();
+    if (!Array.isArray(collectionData)) throw new TypeError('分類格式錯誤');
+    for (const collection of collectionData) {
+      if (!collection || typeof collection.id !== 'string' || !collection.id.trim() || ids.has(collection.id) ||
+          typeof collection.name !== 'string' || !collection.name.trim() || !Array.isArray(collection.monsterSlugs)) throw new TypeError('分類格式錯誤');
+      ids.add(collection.id);
+      for (const slug of collection.monsterSlugs) {
+        if (typeof slug !== 'string' || assigned.has(slug)) throw new TypeError('分類成員重複或格式錯誤');
+        assigned.add(slug);
+      }
+    }
+    collections = collectionData;
 
     monsters = payload.map(normalizeMonster).filter(Boolean);
     render();
